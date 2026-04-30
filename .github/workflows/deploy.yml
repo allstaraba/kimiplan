@@ -11,10 +11,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
       - name: Deploy to Railway
-        run: railway up --service ${{ vars.RAILWAY_SERVICE_NAME || 'kimiplan' }}
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          DEPLOYMENT_ID=$(curl -s -X POST https://backboard.railway.app/graphql/v2 \
+            -H "Content-Type: application/json" \
+            -H "Project-Access-Token: ${{ secrets.RAILWAY_TOKEN }}" \
+            -d '{"query": "mutation { deploymentRedeploy(id: \"48801869-a6a1-4f90-b233-b270fc91343e\") { id status } }"}' \
+            | jq -r '.data.deploymentRedeploy.id')
+          echo "Deployment triggered: $DEPLOYMENT_ID"
