@@ -516,6 +516,38 @@ function buildBipTable(bipTitle, bipLines) {
   // Convert HTML entities and flatten <br>-embedded lines so each physical line is its own entry.
   bipLines = bipLines.flatMap(l => unHtml(l).split('\n'));
 
+  // ── Strip pipe-table syntax so mixed-format BIPs render correctly ──
+  // The AI sometimes generates BIPs as markdown pipe tables; convert those
+  // rows to bold-field syntax so the rest of this parser can handle them.
+  bipLines = bipLines.map(l => {
+    const t = l.trim();
+    // Skip pure separator rows (|---|---|)
+    if (/^\|?[-:|\s]+\|?$/.test(t)) return '';
+    // Convert pipe-row | **Label:** value | → **Label:** value
+    if (t.startsWith('|')) {
+      const inner = t.replace(/^\|/, '').replace(/\|$/, '').trim();
+      const cols = inner.split('|').map(c => c.trim());
+      if (cols.length >= 2) {
+        const left = cols[0];
+        const right = cols.slice(1).join('|').trim();
+        // If left cell looks like a bold label, reconstruct as bold-field line
+        if (/^\*\*[^*]+:\*\*$/.test(left) && right) {
+          return `${left} ${right}`;
+        }
+        // If left cell is plain label, bold it
+        if (left && right && left.includes(':')) {
+          return `**${left.replace(/^\*\*|\*\*$/g, '')}** ${right}`;
+        }
+        // If right cell is empty but left has content, return left only
+        if (left && !right) return left;
+        // Fallback: return inner content
+        return inner;
+      }
+      return inner;
+    }
+    return l;
+  }).filter(Boolean);
+
   // If we have a sub-title (e.g., the ### heading text), add it as a label row
   // Actually, process bipLines as field:value pairs
   let i = 0;
@@ -623,7 +655,35 @@ function buildBipTable(bipTitle, bipLines) {
 function buildGoalTableFromPipeRows(tblLines, domainHeader) {
   let goalNum = null;
   const goalLines = [];
-  for (const tblLine of tblLines) {
+
+  // First pass: merge MNR continuation rows (empty left cell following MNR row)
+  const mergedTblLines = [];
+  for (let ti = 0; ti < tblLines.length; ti++) {
+    const cols = tblLines[ti].trim().replace(/^\||\|$/g, '').split('|').map(c => unHtml(c.trim()));
+    if (cols.length < 2) { mergedTblLines.push(tblLines[ti]); continue; }
+    const label = cols[0];
+    const value = cols[1] || '';
+
+    // Skip markdown separator rows
+    if (/^-{2,}:?\s*$/.test(label) || cols.every(c => /^[-: ]+$/.test(c))) continue;
+
+    // If this row has an empty left cell and the previous row was an MNR row,
+    // append its value to the previous row's value instead of creating a new line
+    if (!label && value && mergedTblLines.length > 0) {
+      const prevCols = mergedTblLines[mergedTblLines.length - 1].trim()
+        .replace(/^\||\|$/g, '').split('|').map(c => unHtml(c.trim()));
+      if (prevCols.length >= 2 && /Medical Necessity Rationale/i.test(prevCols[0])) {
+        const prevValue = prevCols[1] || '';
+        const newValue = prevValue ? `${prevValue}\n${value}` : value;
+        mergedTblLines[mergedTblLines.length - 1] =
+          `| ${prevCols[0]} | ${newValue} |`;
+        continue;
+      }
+    }
+    mergedTblLines.push(tblLines[ti]);
+  }
+
+  for (const tblLine of mergedTblLines) {
     const cols = tblLine.trim().replace(/^\||\|$/g, '').split('|').map(c => unHtml(c.trim()));
     if (cols.length < 2) continue;
     const label = cols[0];
