@@ -548,6 +548,10 @@ function buildBipTable(bipTitle, bipLines) {
     return l;
   }).filter(Boolean);
 
+  // Known BIP field labels — used to distinguish real field rows from bold
+  // sub-headings (e.g., **Aggression:**) that appear inside cell values
+  const BIP_FIELD_RE = /^\*\*(?:Date|Behavior Assessment|Target Behavior|Operational Definition|Quantitative Baseline Data|Hypothesized Function|Functionally Equivalent Replacement Behaviors|Antecedent Interventions|Consequence Interventions|De-escalation Procedures):\*\*/i;
+
   // If we have a sub-title (e.g., the ### heading text), add it as a label row
   // Actually, process bipLines as field:value pairs
   let i = 0;
@@ -587,7 +591,7 @@ function buildBipTable(bipTitle, bipLines) {
           let k = j + 1;
           while (k < bipLines.length && !bipLines[k].trim()) k++;
           const upcoming = (bipLines[k] || '').trim();
-          if (/^\*\*[^*]+:\*\*/.test(upcoming)) break;
+          if (BIP_FIELD_RE.test(upcoming)) break;
           if (upcoming) {
             valueLines.push('');
             j++;
@@ -595,7 +599,7 @@ function buildBipTable(bipTitle, bipLines) {
           }
           break;
         }
-        if (/^\*\*[^*]+:\*\*/.test(next)) break;
+        if (BIP_FIELD_RE.test(next)) break;
         valueLines.push(next);
         j++;
       }
@@ -685,7 +689,20 @@ function buildGoalTableFromPipeRows(tblLines, domainHeader) {
 
   for (const tblLine of mergedTblLines) {
     const cols = tblLine.trim().replace(/^\||\|$/g, '').split('|').map(c => unHtml(c.trim()));
-    if (cols.length < 2) continue;
+    if (cols.length < 2) {
+      // Single-column row → treat as full-width merged cell (e.g., MNR, domain header)
+      const fullText = cols[0] || '';
+      if (!fullText) continue;
+      // Skip markdown separator rows
+      if (/^-{2,}:?\s*$/.test(fullText) || /^[-: ]+$/.test(fullText)) continue;
+      // If it looks like Medical Necessity, format it for buildGoalTable
+      if (/Medical Necessity/i.test(fullText)) {
+        goalLines.push(`**Medical Necessity Rationale:** ${fullText.replace(/^Medical Necessity Rationale:\s*/i, '')}`);
+      } else {
+        goalLines.push(fullText);
+      }
+      continue;
+    }
     const label = cols[0];
     const value = cols[1] || '';
     // Skip markdown separator rows (|---|---|)
@@ -838,9 +855,38 @@ function parseMarkdown(text) {
     if (t.startsWith('|')) {
       flushSection();
       const tblLines = [];
-      while (i < lines.length && lines[i].trim().startsWith('|')) {
-        tblLines.push(lines[i]);
-        i++;
+      let pendingRow = null;
+      while (i < lines.length) {
+        const lineTrim = lines[i].trim();
+        // Safety net: detect multi-line pipe table cells where the AI broke
+        // a row across physical lines (line starts with | but doesn't end with |)
+        if (lineTrim.startsWith('|')) {
+          if (pendingRow !== null) {
+            tblLines.push(pendingRow);
+          }
+          pendingRow = lines[i];
+          // If this line doesn't end with |, subsequent non-| lines belong to this cell
+          if (!lineTrim.endsWith('|')) {
+            i++;
+            continue; // stay in loop to collect continuation lines
+          }
+          i++;
+        } else if (pendingRow !== null && !lineTrim.endsWith('|')) {
+          // Continuation line inside a multi-line cell — append with space
+          pendingRow += ' ' + lines[i].trim();
+          i++;
+        } else if (pendingRow !== null && lineTrim.endsWith('|')) {
+          // Final continuation line that ends with |
+          pendingRow += ' ' + lines[i].trim();
+          tblLines.push(pendingRow);
+          pendingRow = null;
+          i++;
+        } else {
+          break;
+        }
+      }
+      if (pendingRow !== null) {
+        tblLines.push(pendingRow);
       }
       // Route goal tables (pipe rows containing a numbered Goal Statement) through
       // buildGoalTable so they get proper shaded-label styling

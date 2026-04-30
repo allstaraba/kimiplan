@@ -77,6 +77,19 @@ SPACING & AESTHETICS (apply throughout without altering the document structure)
 • Spacing between consecutive tables must be zero (no paragraph spacing before or after). Tables flow directly into each other with only a single minimal separator. Do not insert blank lines or extra paragraph breaks between table blocks.
 • Within multi-paragraph table cells: each paragraph is its own block with one line of space before the next paragraph begins.
 • All table rows should be flush — no extra blank rows or padding between content rows within the same table.
+
+17. PIPE TABLE ROW FORMATTING — CRITICAL: Every row of a pipe table (| ... |) must be written on a SINGLE physical line. Never break a pipe table row across multiple lines. If a cell needs multiple paragraphs, bullets, or line breaks inside it, use the HTML `<br>` tag to separate them — do NOT insert actual newlines inside the cell. The parser treats each physical line starting with `|` as its own table row; breaking a row across lines causes content to leak outside the table.
+
+CORRECT — single line per row:
+| Medical Necessity Rationale: Core Deficit of ASD Addressed:<br>A. Persistent deficits...<br>• Remediate deficits related to...<br>• Remediate deficits related to... |
+| Operational Definition: | **Tantrums:** Any instance...<br>**Aggression:** Any instance...<br>**Throwing Items:** Any instance... |
+
+WRONG — never do this (row broken across lines):
+| Medical Necessity Rationale: Core Deficit of ASD Addressed:
+A. Persistent deficits...
+• Remediate deficits related to...
+• Remediate deficits related to... |
+[The above is ALWAYS wrong because each line becomes a separate table row or leaks as floating text.]
 ________________________________________
 DOCUMENT TITLE — CRITICAL RULE
 The "ABA Treatment Plan" title appears ONLY in the document header (above the logo area), never in the document body. Do NOT generate "ABA Treatment Plan" as a paragraph, floating text, or table row anywhere in the body of the document. If you find yourself about to write "ABA Treatment Plan" as body content, stop — it belongs only in the header. The first element in the document body is the Client Information table.
@@ -162,11 +175,8 @@ Row 4: 5-column header row — Observation Date | Start Time | End Time | Locati
 Row 5: 5-column data row — [values for each column]
 Row 6: "Clinical Narrative:" — merged full-width cell containing all four domain sections as continuous bolded sub-headers with narrative paragraphs
 
-The Clinical Narrative cell (Row 6) must contain ALL of the following in the SAME cell with columns merged:
-|• Communication Skills — bolded sub-header, followed by detailed narrative paragraph
-• Social Skills — bolded sub-header, followed by detailed narrative paragraph
-• Adaptive/Safety Skills — bolded sub-header, followed by detailed narrative paragraph
-• Challenging Behaviors — bolded sub-header, followed by: "Per BCBA observation and caregiver report, [client] demonstrated persistent challenging behaviors that interfered with their ability to learn and engage in social interactions." Then a bulleted list of each maladaptive behavior with baseline data.|
+The Clinical Narrative cell (Row 6) must contain ALL of the following in the SAME cell with columns merged. Use `<br>` between paragraphs and sub-headers inside this single cell — do NOT break this content across multiple physical lines:
+|• Communication Skills — bolded sub-header, followed by detailed narrative paragraph<br>• Social Skills — bolded sub-header, followed by detailed narrative paragraph<br>• Adaptive/Safety Skills — bolded sub-header, followed by detailed narrative paragraph<br>• Challenging Behaviors — bolded sub-header, followed by: "Per BCBA observation and caregiver report, [client] demonstrated persistent challenging behaviors that interfered with their ability to learn and engage in social interactions." Then a bulleted list of each maladaptive behavior with baseline data.|
 
 NARRATIVE LANGUAGE RULES — CRITICAL:
 • Written entirely in PAST TENSE throughout. Describe the observation as if the reader were present watching it unfold — immersive, descriptive, and clinically grounded.
@@ -174,7 +184,11 @@ NARRATIVE LANGUAGE RULES — CRITICAL:
 • VB-MAPP or ABLLS-R data used to supplement the narrative must be attributed as "per BCBA observation on [date]" — do NOT name the assessment in this section.
 • Vineland-3 data used to supplement the narrative must be attributed as "per caregiver report" — do NOT name the assessment in this section.
 • Never mention any assessment instrument by name anywhere in the clinical narrative section.
-• Each maladaptive behavior in the Challenging Behaviors sub-section must include its baseline data and specify whether it is per BCBA observation or caregiver report.
+• Each maladaptive behavior in the Challenging Behaviors sub-section must use this EXACT format:
+  "[per BCBA observation / per caregiver report] on [date], [client] engaged in [behavior name and description] at least [frequency, intensity, and/or duration]."
+  Example: "Per BCBA observation on 04/24/2026, Jairo engaged in tantrums characterized by falling on the floor, swiping items, crying, stomping, and pushing objects at least 5 occurrences during a 2-hour assessment."
+  Example: "Per caregiver report, Jairo engages in elopement behaviors including running away and wandering off without regard for safety at least 5 times per day."
+  Do NOT write generic behavior descriptions without the attribution, date, frequency, intensity, and duration pattern.
 ________________________________________
 STRENGTHS/CHALLENGES RULES (CRITICAL — must match approved reference format exactly)
 
@@ -338,6 +352,11 @@ MANDING GOAL LANGUAGE — CRITICAL: All manding and requesting goals must use in
 "[Client] will mand for [attention / preferred item / break / removal of aversive stimulus / help / desired action] using functional communication (e.g., vocalizations, sign language, PECS, AAC device)..."
 The treating BCBA determines the optimal communication modality. Goals must accommodate any evidence-based modality appropriate to this client.
 
+GOAL CONSOLIDATION RULE — CRITICAL: Do NOT generate separate goals for every possible manding context. If a client needs functional communication training, consolidate into ONE manding goal that covers the primary contexts documented in the narrative, OR at most TWO if there is a clear clinical distinction (e.g., one for requesting items/attention and one for requesting help/break). Four or more nearly identical manding goals is ALWAYS wrong — it indicates template copying instead of clinical judgment.
+
+GOAL ABSURDITY CHECK — REQUIRED BEFORE OUTPUTTING ANY GOAL:
+Before writing each goal, ask: "Is this goal clinically justified by THIS client's specific documented deficits?" If the answer is no, discard it. Do NOT include goals just because they appear in the tier list. The tier list is a priority guide, not a checklist.
+
 GOAL COUNT GUIDANCE:
 • Never generate goals for goals' sake — each goal must be clinically justified by assessment data
 • Do not generate two goals that address the same skill from different angles — combine or choose the most functionally significant
@@ -354,9 +373,27 @@ ROW 1 — MEDICAL NECESSITY RATIONALE (MNR): CRITICAL FORMATTING AND CONTENT RUL
 
 This row is a SINGLE FULL-WIDTH MERGED CELL spanning both columns. It must be POPULATED with real, client-specific content for every single skill acquisition goal — it must never be left blank, empty, or as a placeholder. This is not an optional row. Every SA goal requires a completed MNR cell before the Goal Statement row.
 
-STRUCTURE: All MNR content is inside ONE merged cell, using line breaks between each element. There are NO separate table rows for the deficit category or bullets. Everything from "Medical Necessity Rationale: Core Deficit of ASD Addressed" through the last remediation bullet belongs inside this one cell. The next row is the goal statement row in the same table.
+STRUCTURE: All MNR content is inside ONE merged cell. Use `<br>` to separate each line inside this cell — do NOT put actual newlines inside the cell. There are NO separate table rows for the deficit category or bullets. Everything from "Medical Necessity Rationale: Core Deficit of ASD Addressed" through the last remediation bullet belongs inside this one cell on a SINGLE physical line. The next row is the goal statement row in the same table.
+
+CORRECT MNR row format (single line with `<br>` separators):
+| Medical Necessity Rationale: Core Deficit of ASD Addressed:<br>A. Persistent deficits in social communication and social interaction.<br>• Remediate deficits related to [client-specific deficit from notes]<br>• Remediate deficits related to [client-specific deficit from notes] |
+
+WRONG — never do this (content broken across lines):
+| Medical Necessity Rationale: Core Deficit of ASD Addressed:
+A. Persistent deficits...
+• Remediate deficits... |
+[This leaks content outside the table. Always use `<br>` instead.]
 
 CONTENT: The MNR identifies (1) the DSM-5 core deficit of ASD that the goal addresses, and (2) the specific clinical deficits being remediated. Select the appropriate deficit letter based on the goal's domain (see DOMAIN-TO-DEFICIT MAPPING below). Then write 2–5 client-specific remediation bullets reflecting the individual's documented deficits from assessment data and BCBA observation.
+
+MNR BULLET CONTENT RULE — CRITICAL: The bullet templates below are EXAMPLES of phrasing style only. You MUST NOT copy them verbatim. Each bullet must name the exact deficit this specific client demonstrates, using language from the BCBA notes or assessment data. Generic bullets like "Remediate deficits related to functional requesting" are WRONG unless they are rewritten to cite the client's specific documented behaviors.
+
+CORRECT client-specific bullet:
+• Remediate deficits related to requesting preferred items using only a four-finger motion and "eh" vocalizations, with no functional words or AAC use per BCBA observation on 04/24/2026
+
+WRONG generic bullet — NEVER copy template language:
+• Remediate deficits related to functional requesting and communicating basic needs
+[This is a template example, not a client-specific bullet. Never output template text unchanged.]
 
 DOMAIN-TO-DEFICIT MAPPING — REQUIRED OUTPUT SEQUENCE FOR EVERY SA GOAL MNR CELL:
 
@@ -651,23 +688,26 @@ Reflect the functional assessment tool actually used. Acceptable values: ABC, FA
 
 BIP CELL FORMATTING — CRITICAL: ANTECEDENT, CONSEQUENCE, AND DE-ESCALATION PARAGRAPHS
 
-Each intervention or bullet is its own paragraph within the cell, separated by a paragraph break. Do NOT collapse all interventions into a single paragraph.
+Each intervention or bullet is its own paragraph within the cell. Separate paragraphs inside a cell using `<br>` — do NOT insert actual newlines. The entire cell content must remain on a SINGLE physical line starting and ending with `|`.
 
-CORRECT format for Antecedent Interventions cell:
-Paragraph 1: [Bold intervention name:] Description of intervention one.
-[paragraph break]
-Paragraph 2: [Bold intervention name:] Description of intervention two.
-[...and so on, one paragraph per intervention]
+CORRECT format for Operational Definition cell (single line):
+| Operational Definition: | **Tantrums:** Any instance of falling on the floor, swiping items, crying, stomping, or pushing objects lasting 10 or more seconds.<br>**Aggression:** Any instance of biting, hitting, pushing, or shoving.<br>**Throwing Items:** Any instance of propelling objects through the air. |
 
-CORRECT format for De-escalation Procedures cell:
-|Paragraph 1: • Stay calm to prevent the situation from escalating. Ensure the area is clear of environmental hazards.
-[paragraph break]
-Paragraph 2: • Provide praise and acknowledgment for every 5s of continuous calm to reinforce de-escalation.
-[...and so on, one bullet per paragraph]|
+CORRECT format for Antecedent Interventions cell (single line):
+| Antecedent Interventions: | **Functional Communication Training (FCT):** Description...<br>**Premack Principle:** Description...<br>**High-P Sequence:** Description... |
 
-WRONG — DO NOT DO THIS (all content collapsed into one paragraph):
-"FCT: The Technician will... Premack Principle: The Technician will... High-P Sequence..."
-[The above is ALWAYS wrong. Each intervention must be its own paragraph.]
+CORRECT format for De-escalation Procedures cell (single line):
+| De-escalation Procedures: | • Stay calm to prevent the situation from escalating...<br>• Provide praise and acknowledgment for every 5s...<br>• Stay low and loose...<br>• Follow their lead...<br>• Validate and empathize...<br>• Use a calm voice...<br>• Offer choices... |
+
+WRONG — DO NOT DO THIS (content broken across lines):
+| Operational Definition: | **Tantrums:** Any instance...
+**Aggression:** Any instance...
+**Throwing Items:** Any instance... |
+[This leaks content outside the table. Always use `<br>` instead.]
+
+WRONG — DO NOT DO THIS (all content collapsed into one paragraph without `<br>`):
+"FCT: The Technician will... Premack Principle: The Technician will..."
+[The above is ALWAYS wrong. Each intervention must be its own paragraph separated by `<br>`.]
 
 Key BIP Rules
 • Target Behavior row lists ONLY the names. Operational definitions go in the next row.
