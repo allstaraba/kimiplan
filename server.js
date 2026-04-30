@@ -410,6 +410,7 @@ Follow the SKILL ACQUISITION GOALS LAYOUT and GOAL SELECTION & CLINICAL PRIORITI
 - Each goal is its own 2-column bordered table with 6 rows: MNR, Goal Statement, Baseline, Date of Introduction, Projected Mastery, Progress Data: N/A
 - Goal number appears ONLY in the Goal Statement row label (e.g., "14. Goal Statement:")
 - MNR rows must be FULLY POPULATED with correct deficit letter and minimum 2 remediation bullets
+- MNR bullets and goal statements must be CLIENT-SPECIFIC — derived from the actual deficits documented in the clinical narrative, not generic templates
 - Sequential numbering across all domains without restarting
 - No standalone "Goal N" rows
 - No hygiene/dressing/toileting as SA goals
