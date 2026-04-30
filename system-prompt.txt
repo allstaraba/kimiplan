@@ -287,6 +287,13 @@ Goal count, tier emphasis, and goal complexity must directly reflect the client'
 • VB-MAPP Level 2–3 + Barriers < 25 + Vineland ABC 70–85: 20–28 goals; emphasize Tiers 2–4; more advanced communication, social, and adaptive goals
 • Never generate goals the client has no realistic probability of mastering within 6 months at their current assessed level
 
+CLIENT-SPECIFIC DEFICIT EXTRACTION — CRITICAL:
+Before writing ANY goal or MNR bullet, re-read the client's clinical narrative, assessment results, and BCBA observation data. Extract the specific deficits this individual demonstrates:
+• Name the exact behaviors or skill gaps documented in the notes (e.g., "no functional vocalizations to request needs," "does not follow multi-step directions," "engages in physical aggression when demands are placed")
+• Do NOT use generic deficit language like "difficulties with communication" — use the precise descriptions from the narrative
+• Every MNR remediation bullet must reference a deficit this specific client actually has, phrased using language from the BCBA notes or assessment data
+• Every goal statement must directly target one of the extracted deficits — if the narrative says "client bites and scratches when asked to transition," the goal must target transition-related aggression, not generic "social skills"
+
 Then select goals using the following priority hierarchy in order:
 
 TIER 1 — SAFETY & FUNCTIONAL COMMUNICATION (always address first):
@@ -433,6 +440,21 @@ C. Maladaptive Behavior
 • Remediate deficits related to difficulties with transition
 • Remediate deficits related to emotional regulation
 
+MNR BULLET CONTENT RULE — CRITICAL:
+Remediation bullets must be CLIENT-SPECIFIC, not generic template language. Before writing each bullet, re-read the clinical narrative and extract the actual deficits this individual demonstrates.
+
+CORRECT — client-specific bullets derived from narrative:
+• Remediate deficits related to zero functional vocalizations to request needs or reject non-preferred items per BCBA observation on 04/06/2026
+• Remediate deficits related to biting and scratching caregivers during transitions from preferred to non-preferred activities per caregiver report
+• Remediate deficits related to inability to follow one-step instructions such as "come here" or "sit down" per direct observation
+
+WRONG — generic template bullets that could apply to any client — DO NOT DO THIS:
+• Remediate deficits related to functional requesting and communicating basic needs
+• Remediate deficits related to integrating nonverbal and verbal communication
+• Remediate deficits related to social engagement and back-and-forth interaction
+
+The bullet lists below are EXAMPLES ONLY — you MUST rewrite every bullet using the client's actual documented deficits from the BCBA notes. Never copy a bullet verbatim from the example list.
+
 CONTENT GENERATION RULE: You MUST generate all three elements — the header line, the deficit letter and category text, and the remediation bullets (minimum 2) — inside this cell.
 
 WRONG — empty or placeholder MNR cell — DO NOT DO THIS:
@@ -452,6 +474,13 @@ If ANY answer is NO — write the missing line before proceeding. Do not proceed
 
 ROWS 2–6 — standard 2-column layout:
 | [Number]. Goal Statement: | (FERB) When [condition], [client] will [behavior] in [X]% of opportunities across 5 consecutive sessions, in two settings, and in the presence of two people. |
+
+GOAL STATEMENT CLIENT-SPECIFICITY RULE — CRITICAL:
+The [condition] and [behavior] in every goal statement must be derived from the client's actual documented deficits — not generic templates.
+• Condition: use the specific antecedent context from the BCBA notes (e.g., "when transitioning from a preferred activity to a non-preferred task" not "during structured activities")
+• Behavior: use the exact functional skill gap named in the narrative (e.g., "emit a vocal mand for 'break' or 'help'" not "use functional communication")
+• If the narrative states "client bites caregivers when asked to clean up toys," the goal condition must reference toy clean-up transitions and the behavior must target a specific replacement communication for that exact context
+
 | Baseline: | [N%] on [date] |
 | Date of Introduction: | [date — must match the start of service date from the client notes. If no start of service date is specified, use today's date (the date on which this report is being generated). This rule applies to all SA, BR, and PT goals throughout the plan.] |
 | Projected Mastery: | [date ~6 months out from Date of Introduction] |
