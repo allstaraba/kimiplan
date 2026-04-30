@@ -1,0 +1,11 @@
+node_modules/
+*.log
+.DS_Store
+client/dist/
+*.backup.js
+*.backup.jsx
+*.backup.json
+data/
+backups/
+uploads/
+.env
